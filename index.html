@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Сергей Гончаров · 1С</title>
+<meta name="description" content="1С для управляющих компаний, ТСЖ и селлеров: генератор ОСС, восстановление учёта при ЕИРЦ, маркировка Честный знак. Работаю один и удалённо.">
+<meta name="theme-color" content="#EFE9DD">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Сергей Гончаров · 1С">
+<meta property="og:description" content="1С для управляющих компаний, ТСЖ и селлеров: генератор ОСС, восстановление учёта при ЕИРЦ, маркировка Честный знак. Работаю один и удалённо.">
+<meta property="og:url" content="https://lastochkin1c.ru/">
+<meta property="og:locale" content="ru_RU">
+<link rel="canonical" href="https://lastochkin1c.ru/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23EFE9DD'/%3E%3Cpath d='M30 0H64V64H14Z' fill='%23BF3A2E'/%3E%3Crect x='8' y='20' width='40' height='24' fill='%23141414'/%3E%3Ctext x='28' y='38.5' font-family='Arial Narrow,Arial,sans-serif' font-weight='700' font-size='17' fill='%23EFE9DD' text-anchor='middle'%3E1%D0%A1%3C/text%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: конструктивистский плакат - бумага, красный клин, чёрные плашки, узкие заглавные; разделы чередуют бумагу, чёрное и красное.
+   Один мир на оба режима: цвета заданы явно, тёмной темы нет намеренно. */
+:root{
+  --paper:#EFE9DD; --ink:#141414; --red:#BF3A2E; --red-hi:#F0705F; --grey:#3A3A3A; --dim:#5E5850;
+  --f-display:"Oswald","Arial Narrow","Roboto Condensed",sans-serif;
+  --f-body:"Golos Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font:400 18px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;text-transform:uppercase;margin:0;text-wrap:balance}
+h1{font-size:clamp(52px,8vw,112px);line-height:1.12;letter-spacing:-.005em}
+h1 .ln{display:block}
+h1 .plate{display:inline-block;line-height:1.02;padding:.02em .12em}
+h1 .ln:nth-child(3){margin-top:.16em}
+h2{font-size:clamp(38px,5.4vw,72px);line-height:1.12;letter-spacing:0}
+h3{font-size:24px;line-height:1.1;letter-spacing:.02em}
+.plate{display:inline-block;background:var(--ink);color:var(--paper);padding:0 .12em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.plate.red{background:var(--red);color:var(--paper)}
+p{margin:0;max-width:60ch}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.tag{font:600 13px/1 var(--f-display);text-transform:uppercase;letter-spacing:.14em}
+
+.btn{font:600 17px/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;padding:17px 26px;background:var(--ink);color:var(--paper);border:0;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:10px;white-space:nowrap;transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translate(-3px,-3px);box-shadow:3px 3px 0 var(--red)}
+.btn.line{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.btn.line:hover{box-shadow:inset 0 0 0 2px var(--ink),3px 3px 0 var(--ink)}
+.btn.sm{padding:12px 18px;font-size:15px}
+.copied{font:600 13px var(--f-display);text-transform:uppercase;letter-spacing:.1em}
+
+/* ===== первый экран ===== */
+.hero-band{position:relative;isolation:isolate;overflow:hidden;padding-bottom:88px}
+.hero-band::before{content:"";position:absolute;z-index:-1;right:-18%;top:-40%;width:58%;height:180%;background:var(--red);transform:rotate(calc(14deg + var(--tilt,0deg)))}
+header{padding-block:24px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.who{font:700 20px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.top nav{display:flex;background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink)}
+.top nav a{font:600 14px/1 var(--f-display);text-transform:uppercase;letter-spacing:.1em;text-decoration:none;padding:11px 14px}
+.top nav a:hover{background:var(--ink);color:var(--paper)}
+.hero{padding-top:48px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,480px);gap:56px;align-items:center}
+.lead{display:grid;gap:28px}
+.sub{font-size:20px;line-height:1.45;font-weight:500;max-width:32ch}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:10px;flex-wrap:wrap}
+.chips span{font:600 13px/1 var(--f-display);text-transform:uppercase;letter-spacing:.1em;box-shadow:inset 0 0 0 2px var(--ink);padding:9px 12px;background:var(--paper)}
+@media (max-width:960px){
+  .hero{grid-template-columns:minmax(0,1fr);gap:56px;padding-top:24px}
+  .hero-band::before{right:-40%;top:auto;bottom:-10%;width:140%;height:62%;transform:rotate(calc(-8deg - var(--tilt,0deg)))}
+  .top nav a:not(.go){display:none}
+}
+
+/* виджет кворума */
+.app{background:var(--ink);color:var(--paper);box-shadow:14px 14px 0 var(--paper),14px 14px 0 2px var(--ink)}
+.app-bar{display:flex;justify-content:space-between;gap:10px;padding:14px 18px;background:var(--paper);color:var(--ink);font:700 15px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.06em;box-shadow:inset 0 0 0 2px var(--ink)}
+.app-bar span{font-weight:500;color:var(--dim)}
+.app-body{padding:18px;display:grid;gap:14px}
+.flats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.flat{appearance:none;cursor:pointer;padding:9px 2px;font:600 13px/1.25 var(--f-mono);display:grid;gap:2px;text-align:center;background:#232323;border:1px solid var(--grey);color:var(--paper);transition:background .15s,color .15s}
+.flat small{font-size:11px;font-weight:500;opacity:.75}
+.flat:hover{border-color:var(--paper)}
+.flat[data-v="za"]{background:var(--paper);border-color:var(--paper);color:var(--ink)}
+.flat[data-v="pr"]{background:var(--red);border-color:var(--red);color:var(--paper)}
+.hint{font:600 16px/1.35 var(--f-body);color:var(--paper);display:flex;gap:10px;align-items:center;max-width:none}
+.hint::before{content:"";flex:none;width:22px;height:22px;background:var(--red-hi);clip-path:polygon(0 0,100% 55%,55% 62%,40% 100%)}
+.legend{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:15px;color:#D9D2C5}
+.legend i{display:inline-block;width:11px;height:11px;margin-right:6px;background:var(--grey)}
+.legend .z{background:var(--paper)}.legend .p{background:var(--red)}
+.meter{display:grid;gap:8px}
+.meter-row{display:flex;justify-content:space-between;gap:4px 12px;flex-wrap:wrap;font-size:15px}
+.meter-row .mono{font-size:13px;font-weight:600}
+.bar{position:relative;height:8px;margin-bottom:20px;background:#2C2C2C}
+.bar b{position:absolute;inset:0 auto 0 0;background:#9A958C;transition:width .3s}
+.bar.za b{background:var(--paper)}
+.tick{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--red)}
+.tick::after{content:attr(data-t);position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);font:600 12px var(--f-mono);color:var(--red-hi);white-space:nowrap}
+.verdict{font-size:15px;line-height:1.5;font-weight:600;padding:12px 14px;background:var(--paper);color:var(--ink)}
+.verdict.no{background:var(--red);color:var(--paper)}
+.note{font-size:14px;line-height:1.5;color:#D0C9BC}
+@media (max-width:420px){.flats{grid-template-columns:repeat(4,minmax(0,1fr))}.app{box-shadow:8px 8px 0 var(--paper),8px 8px 0 2px var(--ink)}}
+@media (prefers-reduced-motion:reduce){.btn:hover{transform:none}}
+
+/* ===== разделы ===== */
+section{padding-block:104px}
+.dark{background:var(--ink);color:var(--paper)}
+.redband{background:var(--red);color:var(--paper)}
+.head{display:grid;gap:18px;margin-bottom:56px}
+.head p{font-size:20px;line-height:1.5;font-weight:500}
+.dark .head p,.dark .muted{color:#C9C2B5}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:start}
+.split > .col{display:grid;gap:24px;align-content:start}
+@media (max-width:860px){.split{grid-template-columns:minmax(0,1fr);gap:40px}section{padding-block:72px}.head{margin-bottom:40px}}
+
+/* шаги ОСС: это настоящая последовательность */
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid}
+.steps li{counter-increment:s;display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;padding-block:18px;border-top:2px solid var(--ink)}
+.steps li:last-child{border-bottom:2px solid var(--ink)}
+.steps li::before{content:counter(s);font:700 44px/0.9 var(--f-display);color:var(--red)}
+.steps b{display:block;font:600 19px/1.25 var(--f-display);text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+
+.video{aspect-ratio:16/9;max-width:100%;background:var(--ink);color:var(--paper);display:grid;place-items:center;text-align:center;padding:20px;position:relative;overflow:hidden;isolation:isolate}
+.video::before{content:"";position:absolute;z-index:-1;left:-20%;bottom:-60%;width:70%;height:140%;background:var(--red);transform:rotate(24deg)}
+.video div{display:grid;gap:12px;justify-items:center}
+.play{width:72px;height:72px;background:var(--paper);display:grid;place-items:center}
+.play::after{content:"";border-left:22px solid var(--ink);border-top:14px solid transparent;border-bottom:14px solid transparent;margin-left:6px}
+.video b{font:700 22px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.video small{font-size:14px;opacity:.75}
+
+.prices{display:grid}
+.price{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 20px;align-items:baseline;padding-block:20px;border-top:2px solid currentColor}
+.price:last-child{border-bottom:2px solid currentColor}
+.price b{font:600 20px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.03em}
+.price .sum{font:700 34px/1 var(--f-display);white-space:nowrap;letter-spacing:.01em}
+.price small{grid-column:1 / -1;font-size:15px;line-height:1.5;opacity:.75}
+.dark .price .sum{color:var(--red-hi)}
+section:not(.dark) .price .sum{color:var(--red)}
+
+/* проводка */
+.entry-box{background:var(--paper);color:var(--ink);overflow-x:auto;box-shadow:12px 12px 0 var(--red)}
+.entry{width:100%;border-collapse:collapse;font-size:15px;min-width:420px}
+.entry th,.entry td{padding:14px 16px;text-align:left;border-bottom:2px solid var(--ink)}
+.entry th{font:600 13px var(--f-display);text-transform:uppercase;letter-spacing:.12em;background:var(--ink);color:var(--paper)}
+.entry tr:last-child td{border-bottom:0}
+.entry td.acc{font:700 28px/1 var(--f-display);color:var(--red)}
+.entry tr.was td{color:var(--dim);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
+.entry .st{font:600 12px var(--f-display);text-transform:uppercase;letter-spacing:.1em;padding:4px 8px;background:var(--ink);color:var(--paper);white-space:nowrap}
+.entry tr.was .st{background:transparent;color:var(--dim);box-shadow:inset 0 0 0 1.5px var(--dim)}
+
+/* маркировка */
+.markband{border-top:2px solid var(--ink)}
+.markband .stat b{color:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.stat{padding:24px 20px 24px 0;display:grid;gap:10px;align-content:start}
+.stat + .stat{padding-left:20px;border-left:2px solid var(--ink)}
+.stat b{font:700 clamp(56px,7vw,92px)/.9 var(--f-display)}
+.stat span{font-size:15px;line-height:1.45;font-weight:500}
+@media (max-width:860px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat:nth-child(3){padding-left:0;border-left:0}.stat:nth-child(-n+2){border-bottom:2px solid var(--ink)}}
+.case-note{margin-top:20px;font-size:16px;font-weight:500;max-width:70ch}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:56px}
+.plan{background:var(--paper);color:var(--ink);padding:26px;display:grid;gap:14px;align-content:start;box-shadow:inset 0 0 0 2px var(--ink),10px 10px 0 var(--ink)}
+.plan.hl{background:var(--ink);color:var(--paper);box-shadow:10px 10px 0 var(--red)}
+.plan-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.plan .term{font:600 13px var(--f-display);text-transform:uppercase;letter-spacing:.1em;opacity:.7}
+.plan .sum{font:700 46px/1 var(--f-display);color:var(--red)}
+.plan.hl .sum{color:var(--red-hi)}
+.plan p{font-size:15px;line-height:1.55}
+@media (max-width:860px){.plans{grid-template-columns:minmax(0,1fr);gap:24px}}
+
+/* как работаю */
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+.rules > div{display:grid;gap:12px;align-content:start;border-top:6px solid var(--ink);padding-top:18px}
+.rules > div:nth-child(2){border-color:var(--red)}
+.rules p{font-size:16px}
+@media (max-width:860px){.rules{grid-template-columns:minmax(0,1fr);gap:32px}}
+
+/* контакт */
+.final{position:relative;isolation:isolate;overflow:hidden}
+
+.final .wrap{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:64px;align-items:start}
+.final-head{display:grid;gap:22px;align-content:start}
+.final-head p{font-size:19px;color:#D7D0C3}
+.alt{display:grid;gap:12px;padding-top:12px;border-top:2px solid var(--grey);font-size:15px;color:#C9C2B5}
+.alt .mono{font-size:18px;font-weight:600;color:var(--paper);overflow-wrap:anywhere}
+.addr-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn.ghost-l{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 2px var(--paper)}
+.btn.ghost-l:hover{box-shadow:inset 0 0 0 2px var(--paper),3px 3px 0 var(--red)}
+.form{background:var(--paper);color:var(--ink);padding:clamp(20px,3.5vw,36px);display:grid;gap:20px;box-shadow:14px 14px 0 var(--red)}
+.pick{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.pick legend,.field label{font:600 14px/1.2 var(--f-display);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;padding:0}
+.pick legend{width:100%}
+.pick label{cursor:pointer}
+.pick input{position:absolute;opacity:0;pointer-events:none}
+.pick span{display:inline-block;font:600 16px/1 var(--f-body);padding:13px 16px;box-shadow:inset 0 0 0 2px var(--ink);transition:background .15s,color .15s}
+.pick input:checked + span{background:var(--ink);color:var(--paper)}
+.pick input:focus-visible + span{outline:3px solid var(--red);outline-offset:2px}
+.field{display:grid}
+.field i{color:var(--red);font-style:normal}
+.field input{font:500 18px/1.3 var(--f-body);color:var(--ink);background:#FBF8F2;border:2px solid var(--ink);border-radius:0;padding:14px 14px;width:100%}
+.field input::placeholder{color:#8F877B}
+.field input:focus{outline:none;box-shadow:5px 5px 0 var(--red)}
+.field input[aria-invalid="true"]{border-color:var(--red)}
+.agree{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.45;cursor:pointer}
+.agree input{width:22px;height:22px;accent-color:var(--ink);flex:none;margin:1px 0 0}
+.err{color:var(--red);font-size:14px;font-weight:600;margin-top:6px}
+.btn.big{font-size:20px;padding:20px 28px;background:var(--red);color:var(--paper);justify-self:start}
+.btn.big:hover{box-shadow:4px 4px 0 var(--ink)}
+.done{grid-column:2;background:var(--paper);color:var(--ink);padding:clamp(20px,3.5vw,36px);display:grid;gap:16px;align-content:start;box-shadow:14px 14px 0 var(--red)}
+.done h3{font-size:clamp(32px,4vw,48px)}
+.done .tag{color:var(--red)}
+.manual{display:grid;gap:14px}
+.letter{margin:0;white-space:pre-wrap;font:500 15px/1.5 var(--f-mono);background:#FBF8F2;border:2px solid var(--ink);padding:14px;overflow-wrap:anywhere}
+.btn.ghost-d{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.done .btn.ghost-l{color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink);justify-self:start}
+@media (max-width:860px){.final .wrap{grid-template-columns:minmax(0,1fr);gap:40px}.done{grid-column:1}.form,.done{box-shadow:8px 8px 0 var(--red)}}
+footer{background:var(--ink);color:#C9C2B5;padding-block:28px;font-size:14px;border-top:1px solid var(--grey)}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* ===== движение =====
+   Запускается классом .go на <html>, когда вкладка реально видна (иначе анимация успевает пройти в фоне).
+   При «уменьшить движение» в системе - те же шаги, но только проявлением, без полётов. */
+.go .hero-band::before{animation:wedge .9s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes wedge{from{transform:translateX(70%) rotate(34deg)}}
+@media (max-width:960px){@keyframes wedge{from{transform:translateY(70%) rotate(-24deg)}}}
+.go h1 .ln{animation:rise .75s cubic-bezier(.2,.8,.2,1) backwards}
+.go h1 .ln:nth-child(1){animation-delay:.2s}.go h1 .ln:nth-child(2){animation-delay:.35s}.go h1 .ln:nth-child(3){animation-delay:.5s}
+@keyframes rise{from{transform:translateY(60%);opacity:0}}
+.go h1 .plate{background:linear-gradient(var(--ink),var(--ink)) no-repeat left/0 100%;animation:wipe .6s .8s cubic-bezier(.7,0,.2,1) forwards}
+@keyframes wipe{to{background-size:100% 100%}}
+.go .lead > .sub,.go .lead > .row,.go .lead > .chips,.go .lead > .tag{animation:fade .6s 1s backwards}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}}
+.go .app{animation:slam .8s .55s cubic-bezier(.2,.9,.25,1.15) backwards}
+@keyframes slam{from{transform:translate(120px,-40px) rotate(6deg);opacity:0}}
+.go .flat{animation:pop .35s backwards}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.flat.hit{animation:stamp .3s cubic-bezier(.3,1.6,.5,1)}
+@keyframes stamp{from{transform:scale(.8)}}
+.app.idle .flat.nudge{animation:nudge 1.4s ease-in-out infinite}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 0 var(--red-hi)}50%{box-shadow:0 0 0 5px var(--red-hi)}}
+.app.idle .hint::before{animation:tap 1.4s ease-in-out infinite}
+@keyframes tap{0%,100%{transform:none}50%{transform:translate(5px,5px) scale(.85)}}
+.verdict.flash{animation:flash .45s}
+@keyframes flash{from{transform:translateX(-8px);opacity:.6}}
+
+/* при прокрутке: заголовки, плашки, шаги, карточки въезжают, когда до них доходит экран */
+.rv{transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .7s}
+.rv.pre{opacity:0;transform:translateY(48px)}
+.rv.pre.from-left{transform:translateX(-60px)}
+.rv.pre.from-right{transform:translateX(60px)}
+h2 .plate{background:linear-gradient(var(--ink),var(--ink)) no-repeat left/100% 100%;transition:background-size .7s .3s cubic-bezier(.7,0,.2,1),color .25s .55s}
+h2 .plate.red{background-image:linear-gradient(var(--red),var(--red))}
+h2.pre-wipe .plate{background-size:0 100%;color:inherit}
+
+@media (prefers-reduced-motion:reduce){
+  @keyframes wedge{from{opacity:0}} @keyframes rise{from{opacity:0}} @keyframes slam{from{opacity:0}}
+  @keyframes pop{from{opacity:0}} @keyframes fade{from{opacity:0}} @keyframes flash{from{opacity:.6}}
+  .rv.pre,.rv.pre.from-left,.rv.pre.from-right{transform:none}
+  .app.idle .hint::before{animation:none}
+}
+</style>
+</head>
+<body>
+
+
+<div class="hero-band">
+  <header>
+    <div class="wrap top">
+      <div class="who">Сергей Гончаров · 1С</div>
+      <nav aria-label="Разделы">
+        <a href="#oss">ОСС</a><a href="#uchet">Учёт УК</a><a href="#mark">Маркировка</a><a class="go" href="#contact">Написать</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap hero">
+    <div class="lead">
+      <span class="tag">1С для УК, ТСЖ и селлеров</span>
+      <h1><span class="ln">Собрание</span><span class="ln"><span class="plate">за вечер</span></span><span class="ln">учёт без дыр</span></h1>
+      <p class="sub">Делаю инструменты для управляющих компаний и навожу порядок в 1С. Работаю один и удалённо, вы пишете сразу тому, кто делает работу.</p>
+      <div class="row">
+        <a class="btn" href="#contact">Написать</a>
+        <a class="btn line" href="#oss">Генератор ОСС</a>
+      </div>
+      <div class="chips"><span>вся Россия</span><span>договор и акт</span><span>аванс 50%</span></div>
+    </div>
+
+    <div class="app" aria-label="Генератор ОСС, подсчёт кворума">
+      <div class="app-bar">Генератор ОСС<span>дом-пример, 24 кв.</span></div>
+      <div class="app-body">
+        <p class="hint">Нажмите на квартиру, чтобы поменять её голос</p>
+        <div class="flats" id="flats"></div>
+        <div class="legend"><span><i class="z"></i>за</span><span><i class="p"></i>против</span><span><i></i>не голосовал</span></div>
+        <div class="meter">
+          <div class="meter-row"><span>Участвовали</span><span class="mono" id="m-part"></span></div>
+          <div class="bar" id="bar-part"><b></b><i class="tick" style="left:50%" data-t="50%"></i></div>
+        </div>
+        <div class="meter">
+          <div class="meter-row"><span>«За» от всех собственников</span><span class="mono" id="m-za"></span></div>
+          <div class="bar za" id="bar-za"><b></b><i class="tick" style="left:66.67%" data-t="2/3"></i></div>
+        </div>
+        <div class="verdict" id="verdict"></div>
+        <p class="note">Голос = площадь × доля в праве. Кворум - больше половины голосов (ЖК РФ, ст. 45), часть вопросов требует 2/3 от всех (ст. 46).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="oss">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Продукт</span>
+      <h2>Генератор ОСС: <span class="plate red">от реестра до протокола</span></h2>
+      <p>Один файл, открывается в браузере и работает без интернета. Данные собственников остаются на вашем компьютере.</p>
+    </div>
+    <div class="split">
+      <div class="col">
+        <ol class="steps">
+          <li><div><b>Реестр</b>Загружаете реестр собственников из экселя.</div></li>
+          <li><div><b>Повестка</b>Собираете из библиотеки вопросов, свои формулировки можно добавлять и править.</div></li>
+          <li><div><b>Бланки</b>Сообщение о собрании, бюллетени, реестр и лист присутствия, есть допечатка на уже подписанные бланки.</div></li>
+          <li><div><b>Протокол</b>Вносите голоса, и протокол по приказу 44/пр собирается сам, с кворумом и итогами по каждому вопросу. Типовые ошибки подсвечены до печати.</div></li>
+        </ol>
+      </div>
+      <div class="col">
+        <div class="video"><div><span class="play"></span><b>Собрание за 2 минуты</b><small>видео скоро</small></div></div>
+        <div class="prices">
+          <div class="price"><b>Генератор и инструкция</b><span class="sum">39 000 ₽</span></div>
+          <div class="price"><b>С настройкой под вашу УК</b><span class="sum">49 000 ₽</span><small>ваши дома и шаблоны, первое собрание проводим вместе</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="uchet" class="dark">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Услуга</span>
+      <h2>Агент есть, <span class="plate red">а в 1С его нет</span></h2>
+      <p>Жители платят ЕИРЦ, агент сам перечисляет деньги ресурсникам, а в 1С:Бухгалтерии видны только поступления от РСО. Долг перед поставщиками растёт на бумаге, акты сверки и КУДиР не сходятся.</p>
+    </div>
+    <div class="split">
+      <div class="col">
+        <div class="entry-box"><table class="entry">
+          <thead><tr><th></th><th>Дт</th><th>Кт</th><th>Операция</th></tr></thead>
+          <tbody>
+            <tr class="was"><td><span class="st">было</span></td><td>-</td><td>-</td><td>оплата РСО через агента не отражена</td></tr>
+            <tr><td><span class="st">стало</span></td><td class="acc">60</td><td class="acc">76</td><td>агент заплатил поставщику за УК</td></tr>
+            <tr><td><span class="st">стало</span></td><td class="acc">76</td><td class="acc">62</td><td>оплаты жителей, собранные агентом</td></tr>
+          </tbody>
+        </table></div>
+        <!-- вернуть после «да» Татьяны: <p class="muted">Сейчас восстанавливаю такой учёт у УК в Башкортостане.</p> -->
+      </div>
+      <div class="col">
+        <div class="prices">
+          <div class="price"><b>Проверка одного месяца</b><span class="sum">0 ₽</span><small>сверяю отчёт агента с 1С и банком, присылаю, где и на какую сумму расходится</small></div>
+          <div class="price"><b>Восстановление за период</b><span class="sum">от 15 000 ₽</span><small>точная цена после документов, фиксирую до старта</small></div>
+          <div class="price"><b>Сопровождение</b><span class="sum">от 10 000 ₽</span><small>в месяц, разношу отчёты агентов</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="mark" class="markband">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Услуга</span>
+      <h2>Маркировка <span class="plate">Честный знак</span> под ключ</h2>
+      <p>Для селлеров на вб: МойСклад, TopSeller, FBS. С 1 ноября под маркировку попадают масла и молочка, с 1 декабря крупы, корма и стройматериалы.</p>
+    </div>
+    <div class="stats" aria-label="Последний проект, игрушки на вб">
+      <div class="stat"><b>645</b><span>игрушек с включённой маркировкой</span></div>
+      <div class="stat"><b>315</b><span>дублей карточек убрано без остановки продаж</span></div>
+      <div class="stat"><b>124</b><span>продающих дубля привязаны к основным товарам</span></div>
+      <div class="stat"><b>~10</b><span>дней на весь проект, удалённо</span></div>
+    </div>
+    <p class="case-note">Последний проект, игрушки на вб. Заодно нашёл, почему вб писал «КИЗ нанесён»: коды не были введены в оборот, сканер был ни при чём.</p>
+    <div class="plans">
+      <div class="plan"><div class="plan-top"><h3>Старт</h3><span class="term">1-2 недели</span></div><span class="sum">35 000 ₽</span><p>Аудит связки МС, ТС, вб и ЧЗ, маркировка до 300 SKU, код из сборки вб в отгрузку МС, памятка сборщику.</p></div>
+      <div class="plan hl"><div class="plan-top"><h3>Стандарт</h3><span class="term">2-3 недели</span></div><span class="sum">55 000 ₽</span><p>До 800 SKU, сопоставление карточек и разбор дублей, вывод из оборота и возвраты.</p></div>
+      <div class="plan"><div class="plan-top"><h3>Под ключ</h3><span class="term">3-4 недели</span></div><span class="sum">85 000 ₽</span><p>До 2 000 SKU, УПД с кодами через ЭДО, до 3 кабинетов.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head"><span class="tag">Как работаю</span><h2>Без сюрпризов</h2></div>
+    <div class="rules">
+      <div><h3>Договор и акт</h3><p>Аванс 50% до старта, остаток после сдачи по акту. Срок и цену фиксирую до начала работ.</p></div>
+      <div><h3>Ключи у вас</h3><p>КЭП и подписи в ЧЗ и ЭДО ставите вы по моей инструкции. В вашу базу записываю только после вашего «да» и сохраняю, как было до.</p></div>
+      <div><h3>Всё письменно</h3><p>Что сделал, что нашёл, что нужно от вас. Через месяц легко поднять, о чём договорились.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="dark final">
+  <div class="wrap">
+    <div class="final-head">
+      <h2><span class="plate red">Заявка</span> за минуту</h2>
+      <p>Выберите, что нужно, и оставьте контакт. Отвечу письменно в течение рабочего дня, с ценой и сроком.</p>
+      <div class="alt">
+        <span>Или напрямую:</span>
+        <div class="addr-row"><span class="mono" id="mail">sergey@lastochkin1c.ru</span><button class="btn sm ghost-l" id="copy-mail" type="button">Скопировать</button><span class="copied" id="copied" hidden>скопировано</span></div>
+        <div class="addr-row"><span class="mono">t.me/metaanswer</span><a class="btn sm ghost-l" href="https://t.me/metaanswer" target="_blank" rel="noopener">Телеграм</a></div>
+      </div>
+    </div>
+
+    <form class="form" id="lead" novalidate>
+      <fieldset class="pick">
+        <legend>Что нужно</legend>
+        <label><input type="radio" name="need" id="need-oss" value="oss" checked><span>Генератор ОСС</span></label>
+        <label><input type="radio" name="need" id="need-uchet" value="uchet"><span>Учёт УК при ЕИРЦ</span></label>
+        <label><input type="radio" name="need" id="need-mark" value="mark"><span>Маркировка</span></label>
+        <label><input type="radio" name="need" id="need-other" value="other"><span>Другое в 1С</span></label>
+      </fieldset>
+
+      <div class="field"><label for="org">Организация</label><input id="org" name="org" type="text" autocomplete="organization" placeholder="УК «Ромашка», ТСЖ или ваш магазин на вб"></div>
+
+      <div class="field" data-for="oss"><label for="houses">Сколько домов в управлении</label><input id="houses" name="houses" type="text" inputmode="numeric" placeholder="например, 12"></div>
+      <div class="field" data-for="uchet" hidden><label for="agent">Платёжный агент и с какого месяца разобраться</label><input id="agent" name="agent" type="text" placeholder="ЕИРЦ, с января 2025"></div>
+      <div class="field" data-for="mark" hidden><label for="sku">Сколько товаров и на чём учёт</label><input id="sku" name="sku" type="text" placeholder="около 500 SKU, МойСклад и TopSeller"></div>
+      <div class="field" data-for="other" hidden><label for="task">Коротко о задаче</label><input id="task" name="task" type="text" placeholder="конфигурация и что не работает"></div>
+
+      <div class="field"><label for="contact-f">Почта или телефон <i>*</i></label><input id="contact-f" name="contact" type="text" autocomplete="email" required placeholder="name@mail.ru или +7 900 000-00-00"><small class="err" id="contact-err" hidden>Без контакта я не смогу ответить</small></div>
+
+      <label class="agree"><input type="checkbox" id="agree" name="agree" required><span>Согласен на обработку персональных данных для ответа на заявку</span></label>
+      <small class="err" id="agree-err" hidden>Нужно согласие, иначе заявку принять нельзя</small>
+
+      <button class="btn big" type="submit">Отправить заявку</button>
+    </form>
+
+    <div class="done" id="done" hidden>
+      <h3 id="done-title">Заявка у меня</h3>
+      <p id="done-text"></p>
+      <div class="manual" id="manual" hidden>
+        <pre class="letter" id="letter"></pre>
+        <div class="row"><button class="btn sm" type="button" id="copy-letter">Скопировать заявку</button><a class="btn sm ghost-d" id="mailto" href="mailto:sergey@lastochkin1c.ru">Открыть почту</a><a class="btn sm ghost-d" href="https://t.me/metaanswer" target="_blank" rel="noopener">Телеграм</a><span class="copied" id="copied-letter" hidden>скопировано</span></div>
+      </div>
+      <button class="btn sm ghost-l" type="button" id="again">Заполнить ещё одну</button>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>Сергей Гончаров, специалист по 1С</span><span>Реквизиты и договор по запросу</span></div></footer>
+
+<script>
+(function(){
+  // дом-пример: [номер, площадь м², доля, голос]
+  var flats=[[1,34.2,1,"za"],[2,52.8,1,"za"],[3,61.5,.5,"za"],[4,44.0,1,""],[5,78.3,1,"za"],[6,35.1,1,"pr"],
+             [7,52.6,1,"za"],[8,61.9,1,""],[9,44.4,1,"za"],[10,77.8,1,"za"],[11,34.9,1,""],[12,52.2,.5,"za"],
+             [13,61.0,1,"za"],[14,44.7,1,""],[15,78.0,1,"za"],[16,35.4,1,"za"],[17,52.9,1,"pr"],[18,61.3,1,""],
+             [19,44.1,1,"za"],[20,77.5,1,""],[21,34.6,1,"za"],[22,52.4,1,""],[23,61.7,1,"za"],[24,44.9,1,"za"]];
+  var box=document.getElementById("flats"), total=flats.reduce(function(s,f){return s+f[1];},0);
+  var fmt=function(n){return n.toLocaleString("ru-RU",{minimumFractionDigits:1,maximumFractionDigits:1});};
+  flats.forEach(function(f){
+    var b=document.createElement("button"); b.type="button"; b.className="flat"; b.id="flat-"+f[0];
+    b.innerHTML="кв "+f[0]+"<small>"+fmt(f[1])+(f[2]<1?" ½":"")+"</small>";
+    b.addEventListener("click",function(){f[3]=f[3]==="za"?"pr":f[3]==="pr"?"":"za";draw();});
+    box.appendChild(b); f.el=b;
+  });
+  function draw(){
+    var part=0,za=0;
+    flats.forEach(function(f){var v=f[1]*f[2]; f.el.dataset.v=f[3];
+      f.el.setAttribute("aria-label","квартира "+f[0]+", "+(f[3]==="za"?"за":f[3]==="pr"?"против":"не голосовал"));
+      if(f[3]){part+=v;} if(f[3]==="za"){za+=v;}});
+    var pp=part/total*100, zp=za/total*100, zo=part?za/part*100:0;
+    document.getElementById("m-part").textContent=fmt(part)+" из "+fmt(total)+" м² · "+fmt(pp)+"%";
+    document.getElementById("m-za").textContent=fmt(zp)+"%";
+    document.querySelector("#bar-part b").style.width=Math.min(pp,100)+"%";
+    document.querySelector("#bar-za b").style.width=Math.min(zp,100)+"%";
+    var v=document.getElementById("verdict");
+    if(pp<=50){v.className="verdict no";v.textContent="Кворума нет, нужно больше 50%. Собрание не правомочно.";}
+    else{v.className="verdict";v.textContent="Кворум есть. «За» "+fmt(zo)+"% от участвовавших, решение принято. "+(zp>=66.67?"2/3 от всех тоже набрано.":"Для вопросов на 2/3 не хватает "+fmt(66.67-zp)+"%.");}
+  }
+  var app=document.querySelector(".app"); app.classList.add("idle");
+  var nudge=flats[3].el; nudge.classList.add("nudge");
+  flats.forEach(function(f,i){f.el.style.animationDelay=(0.9+i*0.03)+"s";
+    f.el.addEventListener("animationend",function(e){if(e.animationName==="pop")f.el.style.animationDelay="";});
+    f.el.addEventListener("click",function(){app.classList.remove("idle");nudge.classList.remove("nudge");
+      f.el.classList.remove("hit");void f.el.offsetWidth;f.el.classList.add("hit");
+      var v=document.getElementById("verdict");v.classList.remove("flash");void v.offsetWidth;v.classList.add("flash");});
+  });
+  var calm=window.matchMedia("(prefers-reduced-motion: reduce)").matches, root=document.documentElement;
+  draw();
+  var bars=[].slice.call(document.querySelectorAll(".bar b"));
+  // элементы ниже первого экрана прячем до прокрутки (только когда работает JS)
+  var rv=[];
+  document.querySelectorAll("section .head .tag, section .head p, .steps li, .video, .price, .entry-box, .stat, .plan, .rules > div, .form").forEach(function(el){rv.push(el);});
+  document.querySelectorAll("section h2").forEach(function(h){rv.push(h);});
+  function start(){
+    if(root.classList.contains("go"))return;
+    root.classList.add("go");
+    bars.forEach(function(b){var w=b.style.width;b.style.width="0";setTimeout(function(){b.style.width=w;},1300);});
+    if(!("IntersectionObserver" in window))return;
+    var vh=window.innerHeight;
+    rv.forEach(function(el,i){
+      if(el.getBoundingClientRect().top<vh)return;
+      if(el.tagName==="H2"){ if(el.querySelector(".plate")) el.classList.add("pre-wipe"); el.classList.add("rv","pre","from-left"); }
+      else { el.classList.add("rv","pre"); if(el.classList.contains("entry-box")) el.classList.add("from-left"); if(el.classList.contains("video")) el.classList.add("from-right"); }
+    });
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;io.unobserve(e.target);
+      var el=e.target, sib=el.parentElement?[].indexOf.call(el.parentElement.children,el):0;
+      el.style.transitionDelay=Math.min(sib,5)*0.09+"s";
+      requestAnimationFrame(function(){el.classList.remove("pre");el.classList.remove("pre-wipe");});
+      if(el.classList.contains("stat")&&!calm) count(el.querySelector("b"));
+    });},{threshold:.15,rootMargin:"0px 0px -8% 0px"});
+    rv.forEach(function(el){io.observe(el);});
+  }
+  function count(el){var raw=el.textContent,n=parseInt(raw.replace(/\D/g,""),10),pre=raw.replace(/\d+/,""),t0=null;
+    function step(t){if(!t0)t0=t;var k=Math.min((t-t0)/1100,1);el.textContent=pre+Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step);else el.textContent=raw;}
+    requestAnimationFrame(step);}
+  if(document.visibilityState==="visible") setTimeout(start,120);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")setTimeout(start,120);});
+  // клин первого экрана доворачивается при прокрутке
+  if(!calm){var band=document.querySelector(".hero-band"),ticking=false;
+    window.addEventListener("scroll",function(){if(ticking)return;ticking=true;requestAnimationFrame(function(){
+      band.style.setProperty("--tilt",(Math.min(window.scrollY,900)*0.02)+"deg");ticking=false;});},{passive:true});}
+  // форма заявки
+  // ENDPOINT пустой = приём заявок ещё не подключён: заявка собирается в текст, клиент отправляет её сам
+  var ENDPOINT="";
+  var form=document.getElementById("lead"), done=document.getElementById("done");
+  if(!ENDPOINT){var agl=form.querySelector(".agree");agl.hidden=true;agl.querySelector("input").required=false;}
+  var tips={
+    oss:"Пришлю видео, как проходит собрание в генераторе, и цену под ваше число домов. Если есть реестр собственников в экселе, приложите его к ответу, покажу на нём.",
+    uchet:"Чтобы проверить один месяц бесплатно, пришлите в ответ отчёт агента за любой месяц, выписку банка за тот же месяц и ОСВ по счетам 60 и 76 из 1С.",
+    mark:"Пришлю список вопросов по вашей связке и цену пакета. Если удобно, сразу приложите выгрузку товаров из МоегоСклада.",
+    other:"Посмотрю задачу и напишу, возьмусь ли и сколько это будет стоить."};
+  function syncNeed(){var v=form.querySelector("input[name=need]:checked").value;
+    form.querySelectorAll(".field[data-for]").forEach(function(f){f.hidden=f.dataset.for!==v;});}
+  form.querySelectorAll("input[name=need]").forEach(function(r){r.addEventListener("change",syncNeed);});
+  syncNeed();
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    var c=document.getElementById("contact-f"), ag=document.getElementById("agree"), ok=true;
+    var good=/@.+\./.test(c.value)||c.value.replace(/\D/g,"").length>=10;
+    c.setAttribute("aria-invalid",good?"false":"true"); document.getElementById("contact-err").hidden=good; if(!good){ok=false;c.focus();}
+    if(ENDPOINT){document.getElementById("agree-err").hidden=ag.checked; if(!ag.checked&&ok){ok=false;ag.focus();}}
+    if(!ok)return;
+    var v=form.querySelector("input[name=need]:checked").value, contact=c.value.trim();
+    var names={oss:"Генератор ОСС",uchet:"Учёт УК при ЕИРЦ",mark:"Маркировка",other:"Другое в 1С"};
+    var extra=form.querySelector(".field[data-for='"+v+"'] input").value.trim(), org=document.getElementById("org").value.trim();
+    var data={need:names[v],org:org,details:extra,contact:contact,page:location.hostname||"preview"};
+    function finish(sent){
+      document.getElementById("done-title").textContent=sent?"Заявка у меня":"Последний шаг";
+      document.getElementById("done-text").textContent=sent?("Отвечу в течение рабочего дня на "+contact+". "+tips[v]):"Отправьте эту заявку мне на почту sergey@lastochkin1c.ru или в телеграм, так она точно не потеряется. "+tips[v];
+      var m=document.getElementById("manual"); m.hidden=sent;
+      if(!sent){
+        var txt="Заявка с сайта\nЧто нужно: "+data.need+(org?"\nОрганизация: "+org:"")+(extra?"\nПодробности: "+extra:"")+"\nКонтакт: "+contact;
+        document.getElementById("letter").textContent=txt;
+        document.getElementById("mailto").href="mailto:sergey@lastochkin1c.ru?subject="+encodeURIComponent("Заявка с сайта: "+data.need)+"&body="+encodeURIComponent(txt);
+      }
+      form.hidden=true; done.hidden=false; done.scrollIntoView({block:"nearest"});
+    }
+    if(!ENDPOINT){finish(false);return;}
+    var sb=form.querySelector("button[type=submit]"); sb.disabled=true; sb.textContent="Отправляю…";
+    fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)})
+      .then(function(r){if(!r.ok)throw 0;finish(true);})
+      .catch(function(){finish(false);})
+      .then(function(){sb.disabled=false;sb.textContent="Отправить заявку";});
+  });
+  document.getElementById("copy-letter").addEventListener("click",function(){
+    var t=document.getElementById("letter").textContent, m=document.getElementById("copied-letter");
+    function sel(){var r=document.createRange();r.selectNodeContents(document.getElementById("letter"));var x=getSelection();x.removeAllRanges();x.addRange(r);}
+    try{navigator.clipboard.writeText(t).then(function(){m.hidden=false;setTimeout(function(){m.hidden=true;},1800);},sel);}catch(e){sel();}
+  });
+  document.getElementById("again").addEventListener("click",function(){form.reset();syncNeed();done.hidden=true;form.hidden=false;});
+  document.getElementById("contact-f").addEventListener("input",function(){this.setAttribute("aria-invalid","false");document.getElementById("contact-err").hidden=true;});
+  var btn=document.getElementById("copy-mail"), msg=document.getElementById("copied");
+  btn.addEventListener("click",function(){
+    var show=function(){msg.hidden=false;setTimeout(function(){msg.hidden=true;},1800);};
+    function sel(){var el=document.getElementById("mail"),r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);}
+    try{navigator.clipboard.writeText("sergey@lastochkin1c.ru").then(show,sel);}catch(e){sel();}
+  });
+})();
+</script>
+
+</body>
+</html>

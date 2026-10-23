@@ -207,6 +207,7 @@ section:not(.dark) .price .sum{color:var(--red)}
 .entry tr.was td{color:var(--dim);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
 .entry .st{font:600 12px var(--f-display);text-transform:uppercase;letter-spacing:.1em;padding:4px 8px;background:var(--ink);color:var(--paper);white-space:nowrap}
 .entry tr.was .st{background:transparent;color:var(--dim);box-shadow:inset 0 0 0 1.5px var(--dim)}
+@media (max-width:520px){.entry{min-width:0;font-size:14px}.entry th,.entry td{padding:12px 8px}.entry td.acc{font-size:24px}.entry .st{font-size:11px;padding:3px 6px}.entry-box{box-shadow:8px 8px 0 var(--red);margin-right:8px}}
 
 /* маркировка */
 .markband{border-top:2px solid var(--ink)}
@@ -511,14 +512,14 @@ h2.pre-wipe .plate{background-size:0 100%;color:inherit}
         <label><input type="radio" name="need" id="need-other" value="other"><span>Другое в 1С</span></label>
       </fieldset>
 
-      <div class="field"><label for="org">Организация</label><input id="org" name="org" type="text" autocomplete="organization" placeholder="УК «Ромашка», ТСЖ или ваш магазин на вб"></div>
+      <div class="field"><label for="org">Организация</label><input id="org" name="org" type="text" autocomplete="organization" placeholder="УК «Ромашка» или ИП"></div>
 
       <div class="field" data-for="oss"><label for="houses">Сколько домов в управлении</label><input id="houses" name="houses" type="text" inputmode="numeric" placeholder="например, 12"></div>
       <div class="field" data-for="uchet" hidden><label for="agent">Платёжный агент и с какого месяца разобраться</label><input id="agent" name="agent" type="text" placeholder="ЕИРЦ, с января 2025"></div>
-      <div class="field" data-for="mark" hidden><label for="sku">Сколько товаров и на чём учёт</label><input id="sku" name="sku" type="text" placeholder="около 500 SKU, МойСклад и TopSeller"></div>
+      <div class="field" data-for="mark" hidden><label for="sku">Сколько товаров и на чём учёт</label><input id="sku" name="sku" type="text" placeholder="500 SKU, МойСклад"></div>
       <div class="field" data-for="other" hidden><label for="task">Коротко о задаче</label><input id="task" name="task" type="text" placeholder="конфигурация и что не работает"></div>
 
-      <div class="field"><label for="contact-f">Почта или телефон <i>*</i></label><input id="contact-f" name="contact" type="text" autocomplete="email" required placeholder="name@mail.ru или +7 900 000-00-00"><small class="err" id="contact-err" hidden>Без контакта я не смогу ответить</small></div>
+      <div class="field"><label for="contact-f">Почта или телефон <i>*</i></label><input id="contact-f" name="contact" type="text" autocomplete="email" required placeholder="почта или +7 900 000-00-00"><small class="err" id="contact-err" hidden>Без контакта я не смогу ответить</small></div>
 
       <label class="agree"><input type="checkbox" id="agree" name="agree" required><span>Согласен на обработку персональных данных для ответа на заявку</span></label>
       <small class="err" id="agree-err" hidden>Нужно согласие, иначе заявку принять нельзя</small>

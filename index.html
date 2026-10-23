@@ -122,13 +122,71 @@ section{padding-block:104px}
 .steps li::before{content:counter(s);font:700 44px/0.9 var(--f-display);color:var(--red)}
 .steps b{display:block;font:600 19px/1.25 var(--f-display);text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
 
-.video{aspect-ratio:16/9;max-width:100%;background:var(--ink);color:var(--paper);display:grid;place-items:center;text-align:center;padding:20px;position:relative;overflow:hidden;isolation:isolate}
-.video::before{content:"";position:absolute;z-index:-1;left:-20%;bottom:-60%;width:70%;height:140%;background:var(--red);transform:rotate(24deg)}
-.video div{display:grid;gap:12px;justify-items:center}
-.play{width:72px;height:72px;background:var(--paper);display:grid;place-items:center}
-.play::after{content:"";border-left:22px solid var(--ink);border-top:14px solid transparent;border-bottom:14px solid transparent;margin-left:6px}
-.video b{font:700 22px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.04em}
-.video small{font-size:14px;opacity:.75}
+.video{aspect-ratio:16/10;max-width:100%;background:var(--ink);position:relative;overflow:hidden;isolation:isolate;container-type:inline-size;padding:clamp(10px,3%,18px)}
+.video::before{content:"";position:absolute;z-index:-1;left:-20%;bottom:-70%;width:60%;height:140%;background:var(--red);transform:rotate(24deg)}
+.demo{height:100%;display:grid;grid-template-rows:auto auto 1fr auto;font:400 max(10px,2.5cqw)/1.35 var(--f-body);color:var(--ink)}
+.d-win{display:contents}
+.d-top{display:flex;align-items:center;gap:1.6cqw;background:#D9D1C1;padding:1.2cqw 2cqw}
+.d-top i{width:1.5cqw;height:1.5cqw;border-radius:50%;background:var(--dim);display:inline-block;margin-right:.8cqw}
+.d-top i:first-child{background:var(--red)}
+.d-top span{font:500 max(9px,2.1cqw)/1 var(--f-mono);color:var(--grey)}
+.d-tabs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);background:var(--paper);border-bottom:2px solid var(--ink)}
+.d-tabs li{font:700 max(9px,2.2cqw)/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;text-align:center;padding:1.6cqw .5cqw;color:var(--dim);cursor:pointer;transition:background .3s,color .3s}
+.d-tabs li.on{background:var(--ink);color:var(--paper)}
+.d-stage{background:var(--paper);position:relative;overflow:hidden}
+.d-sc{position:absolute;inset:0;padding:2.6cqw 3cqw;display:grid;align-content:start;gap:1.4cqw;opacity:0;transform:translateY(2cqw);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.d-sc.on{opacity:1;transform:none}
+.d-row{display:grid;grid-template-columns:38% 1fr;gap:2cqw;border-bottom:1px solid #D2C9B8;padding-bottom:1cqw}
+.d-row b{font-weight:600;color:var(--dim)}
+.d-row span{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.d-type{display:inline-block;overflow:hidden;white-space:nowrap;max-width:0;vertical-align:bottom}
+.d-sc.on .d-type{animation:dtype .7s steps(18,end) forwards}
+.d-sc.on .d-row:nth-child(2) .d-type{animation-delay:.5s}.d-sc.on .d-row:nth-child(3) .d-type{animation-delay:1s}.d-sc.on .d-row:nth-child(4) .d-type{animation-delay:1.5s}
+@keyframes dtype{to{max-width:100%}}
+.d-file{justify-self:start;font:500 max(9px,2.1cqw)/1 var(--f-mono);background:var(--ink);color:var(--paper);padding:1.1cqw 1.8cqw}
+.d-file::before{content:"↓ ";color:var(--red-hi)}
+.d-sc.on .d-file{animation:ddrop .5s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes ddrop{from{transform:translateY(-4cqw);opacity:0}}
+.d-tbl{display:grid;gap:.5cqw;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:max(9px,2.2cqw)}
+.d-tbl div{display:grid;grid-template-columns:14% 1fr 24% 14%;gap:1.5cqw;padding:.6cqw 1cqw;background:#E4DCCC}
+.d-tbl div:first-child{background:none;color:var(--dim);font-family:var(--f-body);font-weight:600}
+.d-sc.on .d-tbl div{animation:drow .35s backwards}
+.d-sc.on .d-tbl div:nth-child(2){animation-delay:.45s}.d-sc.on .d-tbl div:nth-child(3){animation-delay:.6s}.d-sc.on .d-tbl div:nth-child(4){animation-delay:.75s}.d-sc.on .d-tbl div:nth-child(5){animation-delay:.9s}
+@keyframes drow{from{opacity:0;transform:translateX(-2cqw)}}
+.d-ok{font-weight:600}.d-ok::before{content:"✓ ";color:var(--red)}
+.d-sc.on .d-ok{animation:drow .35s 1.3s backwards}
+.d-q{display:grid;grid-template-columns:auto 1fr auto;gap:1.6cqw;align-items:center;padding:1.1cqw 1.4cqw;border:2px solid var(--ink)}
+.d-q i{width:2.4cqw;height:2.4cqw;border:2px solid var(--ink);display:grid;place-items:center;font-style:normal;font-size:max(9px,2cqw);line-height:1}
+.d-q em{font:600 max(9px,1.9cqw)/1 var(--f-mono);font-style:normal;background:var(--ink);color:var(--paper);padding:.6cqw 1cqw}
+.d-sc.on .d-q{animation:drow .35s backwards}
+.d-sc.on .d-q:nth-child(2){animation-delay:.5s}.d-sc.on .d-q:nth-child(3){animation-delay:1s}
+.d-sc.on .d-q i::after{content:"✓";animation:dpop .25s backwards}
+.d-sc.on .d-q:nth-child(1) i::after{animation-delay:.4s}.d-sc.on .d-q:nth-child(2) i::after{animation-delay:.9s}.d-sc.on .d-q:nth-child(3) i::after{animation-delay:1.4s}
+@keyframes dpop{from{opacity:0;transform:scale(2)}}
+.d-big{font:700 max(22px,9cqw)/1 var(--f-display);font-variant-numeric:tabular-nums}
+.d-meter{position:relative;height:3.2cqw;background:#D9D1C1}
+.d-meter b{position:absolute;inset:0 auto 0 0;width:0;background:var(--ink)}
+.d-sc.on .d-meter b{transition:width 1.8s cubic-bezier(.3,.7,.3,1) .2s;width:63.7%}
+.d-meter span{position:absolute;top:-1cqw;bottom:-1cqw;left:50%;width:3px;background:var(--red)}
+.d-cap{display:flex;justify-content:space-between;font:500 max(9px,2cqw)/1 var(--f-mono);color:var(--dim)}
+.d-stamp{justify-self:start;font:700 max(10px,2.6cqw)/1 var(--f-display);text-transform:uppercase;letter-spacing:.08em;color:var(--red);border:3px solid var(--red);padding:1cqw 1.6cqw;transform:rotate(-4deg)}
+.d-sc.on .d-stamp{animation:dstamp .35s 2.1s backwards}
+@keyframes dstamp{from{opacity:0;transform:rotate(-4deg) scale(1.8)}}
+.d-paper{background:#fff;box-shadow:0 1.2cqw 0 -.4cqw #D2C9B8;padding:2cqw 2.6cqw;display:grid;gap:1cqw;width:62%}
+.d-paper b{font:700 max(10px,2.4cqw)/1.1 var(--f-display);text-transform:uppercase;text-align:center}
+.d-paper i{height:.9cqw;background:#DDD6C8;display:block}
+.d-paper i:nth-child(odd){width:86%}
+.d-sc.on .d-paper{animation:ddrop .5s backwards}
+.d-sc.on .d-paper i{animation:dline .3s backwards}
+.d-sc.on .d-paper i:nth-child(3){animation-delay:.3s}.d-sc.on .d-paper i:nth-child(4){animation-delay:.45s}.d-sc.on .d-paper i:nth-child(5){animation-delay:.6s}.d-sc.on .d-paper i:nth-child(6){animation-delay:.75s}
+@keyframes dline{from{transform:scaleX(0);transform-origin:left}}
+.d-docs{position:absolute;right:3cqw;top:3cqw;width:30%;display:grid;gap:.8cqw;font:500 max(9px,1.9cqw)/1.2 var(--f-mono)}
+.d-docs span{background:var(--ink);color:var(--paper);padding:.7cqw 1cqw}
+.d-sc.on .d-docs span{animation:drow .3s backwards}
+.d-sc.on .d-docs span:nth-child(2){animation-delay:.6s}.d-sc.on .d-docs span:nth-child(3){animation-delay:.8s}.d-sc.on .d-docs span:nth-child(4){animation-delay:1s}.d-sc.on .d-docs span:nth-child(5){animation-delay:1.2s}
+@media (prefers-reduced-motion:reduce){.d-type{max-width:none}}
+.d-bar{height:1cqw;background:#2A2A2A}
+.d-bar i{display:block;height:100%;width:0;background:var(--red)}
 
 .prices{display:grid}
 .price{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 20px;align-items:baseline;padding-block:20px;border-top:2px solid currentColor}
@@ -325,7 +383,41 @@ h2.pre-wipe .plate{background-size:0 100%;color:inherit}
         </ol>
       </div>
       <div class="col">
-        <div class="video"><div><span class="play"></span><b>Собрание за 2 минуты</b><small>видео скоро</small></div></div>
+        <div class="video" id="demo" role="img" aria-label="Как работает генератор: карточка дома, загрузка реестра, повестка из библиотеки, кворум, готовый протокол">
+          <div class="demo">
+          <div class="d-top"><span><i></i><i></i><i></i></span><span>ОСС-генератор.html · работает без интернета</span></div>
+          <ol class="d-tabs"><li data-s="0">Дом</li><li data-s="1">Реестр</li><li data-s="2">Повестка</li><li data-s="3">Голоса</li><li data-s="4">Протокол</li></ol>
+          <div class="d-stage">
+            <div class="d-sc" data-s="0">
+              <div class="d-row"><b>Адрес</b><span class="d-type">ул. Садовая, 12</span></div>
+              <div class="d-row"><b>Помещений</b><span class="d-type">48 жилых, 2 нежилых</span></div>
+              <div class="d-row"><b>Площадь дома</b><span class="d-type">3 210,4 м²</span></div>
+              <div class="d-row"><b>Форма</b><span class="d-type">очно-заочная</span></div>
+            </div>
+            <div class="d-sc" data-s="1">
+              <span class="d-file">реестр_Садовая12.xlsx</span>
+              <div class="d-tbl"><div><span>кв.</span><span>собственник</span><span>м²</span><span>доля</span></div><div><span>1</span><span>А. И.</span><span>62,1</span><span>1/1</span></div><div><span>2</span><span>В. С.</span><span>44,8</span><span>1/2</span></div><div><span>2</span><span>Н. С.</span><span>44,8</span><span>1/2</span></div><div><span>3</span><span>П. К.</span><span>71,3</span><span>1/1</span></div></div>
+              <span class="d-ok">загружено 50 помещений, ошибок нет</span>
+            </div>
+            <div class="d-sc" data-s="2">
+              <div class="d-q"><i></i><span>Выбор председателя и секретаря</span><em>50%+1</em></div>
+              <div class="d-q"><i></i><span>Размер платы за содержание</span><em>50%+1</em></div>
+              <div class="d-q"><i></i><span>Капремонт на спецсчёте</span><em>2/3</em></div>
+            </div>
+            <div class="d-sc" data-s="3">
+              <span class="d-big"><span id="dq">0,0</span>%</span>
+              <div class="d-meter"><b></b><span></span></div>
+              <div class="d-cap"><span>проголосовало 2 045,1 из 3 210,4 м²</span><span>порог 50%</span></div>
+              <span class="d-stamp">кворум есть</span>
+            </div>
+            <div class="d-sc" data-s="4">
+              <div class="d-paper"><b>Протокол № 1</b><i></i><i></i><i></i><i></i><i></i></div><span class="d-stamp">готово к печати</span>
+              <div class="d-docs"><span>протокол.docx</span><span>сообщение.docx</span><span>бюллетени.docx</span><span>реестр.docx</span><span>присутствие.docx</span></div>
+            </div>
+          </div>
+          <div class="d-bar"><i></i></div>
+          </div>
+        </div>
         <div class="prices">
           <div class="price"><b>Генератор и инструкция</b><span class="sum">39 000 ₽</span></div>
           <div class="price"><b>С настройкой под вашу УК</b><span class="sum">55 000 ₽</span><small>ваши дома и шаблоны, первое собрание проводим вместе</small></div>
@@ -576,6 +668,26 @@ h2.pre-wipe .plate{background-size:0 100%;color:inherit}
     function sel(){var el=document.getElementById("mail"),r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);}
     try{navigator.clipboard.writeText("sergey@lastochkin1c.ru").then(show,sel);}catch(e){sel();}
   });
+})();
+
+(function(){
+  var root=document.getElementById("demo"); if(!root) return;
+  var sc=root.querySelectorAll(".d-sc"), tabs=root.querySelectorAll(".d-tabs li"), bar=root.querySelector(".d-bar i"), q=document.getElementById("dq");
+  var cur=-1, timer=null, raf=null, DUR=3800, still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function count(){ var t0=performance.now(); cancelAnimationFrame(raf);
+    (function f(t){ var k=Math.min(1,(t-t0-200)/1800); k=k<0?0:1-Math.pow(1-k,3); q.textContent=(63.7*k).toFixed(1).replace(".",","); if(k<1) raf=requestAnimationFrame(f); })(t0); }
+  function show(i){ cur=i;
+    for(var j=0;j<sc.length;j++){ sc[j].classList.toggle("on",j===i); tabs[j].classList.toggle("on",j===i); }
+    if(i===3){ if(still) q.textContent="63,7"; else count(); }
+    if(!still){ bar.style.transition="none"; bar.style.width=(i/5*100)+"%"; void bar.offsetWidth; bar.style.transition="width "+DUR+"ms linear"; bar.style.width=((i+1)/5*100)+"%"; } else bar.style.width="100%";
+  }
+  function loop(){ clearTimeout(timer); timer=setTimeout(function(){ show((cur+1)%5); loop(); }, cur===4?DUR+1200:DUR); }
+  tabs.forEach(function(t){ t.addEventListener("click",function(){ show(+t.dataset.s); if(!still) loop(); }); });
+  if(still){ show(3); return; }
+  var started=false;
+  new IntersectionObserver(function(es){ es.forEach(function(e){
+    if(e.isIntersecting){ if(!started){ started=true; show(0); } loop(); } else clearTimeout(timer);
+  }); },{threshold:.35}).observe(root);
 })();
 </script>
 

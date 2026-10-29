@@ -707,9 +707,9 @@ footer a{color:inherit;text-underline-offset:3px}
 </script>
 
 <script>
-/* согласие на cookies → Яндекс Метрика (29.10). METRIKA_ID — номер счётчика из metrika.yandex.ru; пока null — баннер работает, данные не идут */
+/* согласие на cookies → Яндекс Метрика (29.10). счётчик Метрики 113902635 (заведён 30.10) */
 (function(){
-  var METRIKA_ID = null;
+  var METRIKA_ID = 113902635;
   var K="ck-consent", box=document.getElementById("ck");
   function get(){ try{return localStorage.getItem(K);}catch(e){return null;} }
   function set(v){ try{localStorage.setItem(K,v);}catch(e){} }
@@ -717,8 +717,8 @@ footer a{color:inherit;text-underline-offset:3px}
     if(!METRIKA_ID || window.ym) return;
     (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();
      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-     (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-    ym(METRIKA_ID,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true,trackHash:true,ecommerce:false,triggerEvent:true});
+     (window,document,"script","https://mc.yandex.ru/metrika/tag.js?id="+METRIKA_ID,"ym");
+    ym(METRIKA_ID,"init",{ssr:true,webvisor:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true,trackHash:true,triggerEvent:true});
     goals();
   }
   // цели (29.10, «собирай как можно больше»): что именно делают люди на странице

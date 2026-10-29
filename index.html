@@ -319,6 +319,15 @@ h2.pre-wipe .plate{background-size:0 100%;color:inherit}
   .rv.pre,.rv.pre.from-left,.rv.pre.from-right{transform:none}
   .app.idle .hint::before{animation:none}
 }
+/* cookie-баннер (29.10): аналитика (Яндекс Метрика) грузится только после «Принять» */
+.ck{position:fixed;left:16px;right:16px;bottom:16px;z-index:50;max-width:620px;margin:0 auto;background:var(--ink);color:var(--paper);padding:18px 20px;box-shadow:6px 6px 0 var(--red);display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:15px;line-height:1.5}
+.ck p{margin:0;flex:1 1 260px}
+.ck a{color:var(--paper);text-underline-offset:3px}
+.ck .row{display:flex;gap:10px;flex-wrap:wrap}
+.ck .btn.sm{padding:11px 16px;font-size:14px}
+.ck .btn.acc{background:var(--red);color:var(--paper)}
+.ck .btn.rej{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 2px var(--paper)}
+footer a{color:inherit;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -539,7 +548,12 @@ h2.pre-wipe .plate{background-size:0 100%;color:inherit}
   </div>
 </section>
 
-<footer><div class="wrap"><span>Сергей Гончаров, специалист по 1С</span><span>Реквизиты и договор по запросу</span></div></footer>
+<footer><div class="wrap"><span>Сергей Гончаров, специалист по 1С</span><span>Реквизиты и договор по запросу · <a href="/privacy.html">Политика конфиденциальности</a></span></div></footer>
+
+<div class="ck" id="ck" hidden role="dialog" aria-label="Cookies">
+  <p>Сайт использует cookies и Яндекс Метрику, чтобы считать посещения и понимать, что людям интересно. Подробно — в <a href="/privacy.html">политике</a>.</p>
+  <div class="row"><button class="btn sm acc" type="button" id="ck-yes">Принять</button><button class="btn sm rej" type="button" id="ck-no">Только необходимые</button></div>
+</div>
 
 <script>
 (function(){
@@ -689,6 +703,27 @@ h2.pre-wipe .plate{background-size:0 100%;color:inherit}
   new IntersectionObserver(function(es){ es.forEach(function(e){
     if(e.isIntersecting){ if(!started){ started=true; show(0); } loop(); } else clearTimeout(timer);
   }); },{threshold:.35}).observe(root);
+})();
+</script>
+
+<script>
+/* согласие на cookies → Яндекс Метрика (29.10). METRIKA_ID — номер счётчика из metrika.yandex.ru; пока null — баннер работает, данные не идут */
+(function(){
+  var METRIKA_ID = null;
+  var K="ck-consent", box=document.getElementById("ck");
+  function get(){ try{return localStorage.getItem(K);}catch(e){return null;} }
+  function set(v){ try{localStorage.setItem(K,v);}catch(e){} }
+  function metrika(){
+    if(!METRIKA_ID || window.ym) return;
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();
+     k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+     (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+    ym(METRIKA_ID,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+  }
+  var c=get();
+  if(c==="all") metrika(); else if(!c) box.hidden=false;
+  document.getElementById("ck-yes").addEventListener("click",function(){ set("all"); box.hidden=true; metrika(); });
+  document.getElementById("ck-no").addEventListener("click",function(){ set("necessary"); box.hidden=true; });
 })();
 </script>
 

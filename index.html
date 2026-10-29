@@ -718,7 +718,45 @@ footer a{color:inherit;text-underline-offset:3px}
     (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();
      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
      (window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-    ym(METRIKA_ID,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});
+    ym(METRIKA_ID,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true,trackHash:true,ecommerce:false,triggerEvent:true});
+    goals();
+  }
+  // цели (29.10, «собирай как можно больше»): что именно делают люди на странице
+  function goal(n,p){ try{ ym(METRIKA_ID,"reachGoal",n,p||{}); }catch(e){} }
+  function goals(){
+    document.addEventListener("click",function(e){
+      var a=e.target.closest("a,button"); if(!a) return;
+      var h=a.getAttribute("href")||"", id=a.id||"";
+      if(h.indexOf("t.me/")>-1) goal("tg",{where:a.closest("section,header,footer")?.id||"?"});
+      else if(h.indexOf("mailto:")===0) goal("mail");
+      else if(h.charAt(0)==="#") goal("nav_"+h.slice(1));
+      else if(id==="copy-letter") goal("copy_letter");
+      else if(id==="again") goal("form_again");
+      else if(a.classList.contains("flat")) goal("oss_demo_click");
+      else if(a.closest(".tabs,[data-s]")) goal("demo_tab");
+    },true);
+    var f=document.getElementById("lead");
+    if(f){ var touched=false;
+      f.addEventListener("input",function(){ if(!touched){ touched=true; goal("form_start"); } });
+      f.addEventListener("submit",function(){ goal("form_submit"); });
+    }
+    // глубина прокрутки и какие разделы реально увидели
+    var marks={25:0,50:0,75:0,100:0};
+    addEventListener("scroll",function(){
+      var d=document.documentElement, pct=Math.round((scrollY+innerHeight)/d.scrollHeight*100);
+      for(var m in marks) if(!marks[m] && pct>=+m){ marks[m]=1; goal("scroll_"+m); }
+    },{passive:true});
+    if("IntersectionObserver" in window){
+      var seen={};
+      var io=new IntersectionObserver(function(es){ es.forEach(function(en){
+        var id=en.target.id; if(en.isIntersecting && id && !seen[id]){ seen[id]=1; goal("see_"+id); }
+      }); },{threshold:.4});
+      document.querySelectorAll("section[id]").forEach(function(x){ io.observe(x); });
+    }
+    // откуда пришли: utm из ссылок рассылки сохраняются как параметры визита
+    var q=new URLSearchParams(location.search), utm={};
+    ["utm_source","utm_medium","utm_campaign","utm_content"].forEach(function(k){ if(q.get(k)) utm[k]=q.get(k); });
+    if(Object.keys(utm).length) try{ ym(METRIKA_ID,"params",utm); }catch(e){}
   }
   var c=get();
   if(c==="all") metrika(); else if(!c) box.hidden=false;
